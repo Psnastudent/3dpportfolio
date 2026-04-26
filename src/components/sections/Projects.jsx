@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
-import { FiExternalLink, FiGithub, FiAward, FiDatabase, FiPenTool, FiArrowRight } from 'react-icons/fi';
+import { FiExternalLink, FiGithub, FiAward, FiArrowRight } from 'react-icons/fi';
 import MagicCard, { MagicCardContainer } from '../MagicCard/MagicCard';
 import './Projects.css';
 
@@ -81,25 +81,48 @@ const projects = [
 
 const achievements = [
   {
-    title: '3rd Prize in Idea Fest',
-    description: 'Secured 3rd Prize at college for presenting an innovative project on AI-powered Rail Madad, focusing on enhancing passenger grievance redressal and support in Indian Railways.',
+    title: '2nd Prize — Wibeflowthon',
+    description: 'Team ZEN ORBIT secured 2nd Prize at Wibeflowthon – 24 Hours Hackathon organized by Rathinam Group of Institutions Technical Campus.',
     icon: <FiAward size={22} />,
+    emoji: '🏆',
   },
   {
-    title: 'MongoDB Certification',
-    description: 'Completed MongoDB training — learnt database concepts, CRUD operations, and NoSQL fundamentals.',
-    icon: <FiDatabase size={22} />,
-    date: 'Jun 2024',
+    title: 'SDG 2nd Place — HackFest 2K26',
+    description: 'Team ZenOrbit secured SDG 2nd Prize at HackFest 2K26, a 36-hour hackathon at M. Kumarasamy College of Engineering, Karur. Built OrbitXOS — an innovative platform for intelligent satellite operations and space system monitoring.',
+    icon: <FiAward size={22} />,
+    emoji: '🥈',
   },
   {
-    title: 'Figma Design Workshop',
-    description: 'Attended a one-day hands-on training on Exploring Design with Figma, organized by PSNA CSE department in association with Computer Society of India.',
-    icon: <FiPenTool size={22} />,
-    date: 'May 2024',
+    title: '3rd Prize — Project Expo',
+    description: 'Won 3rd Prize along with a cash award at the Project Expo for AI-powered RailMadad Complaint Bot featuring AI-based complaint categorization, OCR analysis, and sentiment analysis.',
+    icon: <FiAward size={22} />,
+    emoji: '🥉',
   },
 ];
 
 const INITIAL_COUNT = 3;
+
+/* Box reveal animation variants */
+const cardVariants = {
+  hidden: {
+    opacity: 0,
+    y: 60,
+    scale: 0.85,
+    rotateX: 15,
+  },
+  visible: (i) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    rotateX: 0,
+    transition: {
+      type: 'spring',
+      stiffness: 100,
+      damping: 15,
+      delay: i * 0.15,
+    },
+  }),
+};
 
 export default function Projects() {
   const ref = useRef(null);
@@ -213,14 +236,24 @@ export default function Projects() {
             {achievements.map((item, i) => (
               <motion.div
                 key={item.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.4, delay: 0.6 + i * 0.1 }}
                 className="achievements__item-wrapper"
+                custom={i}
+                variants={cardVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: '-50px' }}
+                whileHover={{
+                  y: -8,
+                  scale: 1.03,
+                  transition: { type: 'spring', stiffness: 300, damping: 20 },
+                }}
               >
-                <div className={`new-achievement-card ${i === 1 ? 'new-achievement-card--highlight' : ''}`}>
+                <div className="new-achievement-card">
                   <div className="new-achievement-card__header">
-                    <h4 className="new-achievement-card__title">{item.title}</h4>
+                    <h4 className="new-achievement-card__title">
+                      <span className="new-achievement-card__emoji">{item.emoji}</span>
+                      {item.title}
+                    </h4>
                     <div className="new-achievement-card__icon-wrap">
                       {item.icon}
                     </div>
@@ -230,11 +263,7 @@ export default function Projects() {
                     <p className="new-achievement-card__desc">{item.description}</p>
                   </div>
 
-                  {item.date && (
-                    <div className="new-achievement-card__footer">
-                      <span className="new-achievement-card__tag">{item.date}</span>
-                    </div>
-                  )}
+                  <div className="new-achievement-card__shimmer" />
                 </div>
               </motion.div>
             ))}
@@ -244,3 +273,4 @@ export default function Projects() {
     </section>
   );
 }
+

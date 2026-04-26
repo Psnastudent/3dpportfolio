@@ -109,7 +109,7 @@ void main() {
 `;
 
 export default function Aurora({
-  colorStops = ['#7c3aed', '#a855f7', '#7c3aed'],
+  colorStops = ['#3aed79ff', '#9f50eaff', '#7c3aed'],
   amplitude = 1.0,
   blend = 0.5,
   speed = 1.0,

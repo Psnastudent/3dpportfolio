@@ -1,8 +1,16 @@
-import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { FiLinkedin, FiGithub, FiMail, FiSend, FiMapPin } from 'react-icons/fi';
+import { useRef, useState } from 'react';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { FiLinkedin, FiGithub, FiMail, FiSend, FiMapPin, FiCheck, FiX } from 'react-icons/fi';
+import emailjs from '@emailjs/browser';
 import MagicCard from '../MagicCard/MagicCard';
 import './Contact.css';
+
+// ─── EmailJS Config ───────────────────────────────────
+// Replace these with your actual EmailJS credentials
+const EMAILJS_SERVICE_ID = 'service_z38werk';
+const EMAILJS_TEMPLATE_ID = 'template_4qdj5li';
+const EMAILJS_PUBLIC_KEY = 'Z40uXn4MGXLFamYrT';
+// ──────────────────────────────────────────────────────
 
 const links = [
   {
@@ -30,7 +38,61 @@ const links = [
 
 export default function Contact() {
   const ref = useRef(null);
+  const formRef = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
+
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [sending, setSending] = useState(false);
+  const [toast, setToast] = useState(null); // { type: 'success' | 'error', message: string }
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
+  };
+
+  const showToast = (type, message) => {
+    setToast({ type, message });
+    setTimeout(() => setToast(null), 4000);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Basic validation
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      showToast('error', 'Please fill in all fields.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      showToast('error', 'Please enter a valid email address.');
+      return;
+    }
+
+    setSending(true);
+
+    try {
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          message: formData.message,
+          to_email: 'santhoshkumar37937@gmail.com',
+        },
+        EMAILJS_PUBLIC_KEY
+      );
+
+      showToast('success', 'Message sent successfully! I\'ll get back to you soon.');
+      setFormData({ name: '', email: '', message: '' });
+    } catch (error) {
+      console.error('EmailJS error:', error);
+      showToast('error', 'Failed to send message. Please try again or email me directly.');
+    } finally {
+      setSending(false);
+    }
+  };
 
   return (
     <section id="contact" className="contact" ref={ref}>
@@ -94,27 +156,82 @@ export default function Contact() {
             transition={{ duration: 0.6, delay: 0.3 }}
           >
             <MagicCard className="contact__form">
-              <form onSubmit={(e) => e.preventDefault()}>
+              <form ref={formRef} onSubmit={handleSubmit}>
                 <div className="contact__form-group">
                   <label htmlFor="name" className="contact__form-label">Name</label>
-                  <input type="text" id="name" className="contact__form-input" placeholder="Your name" />
+                  <input
+                    type="text"
+                    id="name"
+                    className="contact__form-input"
+                    placeholder="Your name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    disabled={sending}
+                  />
                 </div>
                 <div className="contact__form-group">
                   <label htmlFor="email" className="contact__form-label">Email</label>
-                  <input type="email" id="email" className="contact__form-input" placeholder="your@email.com" />
+                  <input
+                    type="email"
+                    id="email"
+                    className="contact__form-input"
+                    placeholder="your@email.com"
+                    value={formData.email}
+                    onChange={handleChange}
+                    disabled={sending}
+                  />
                 </div>
                 <div className="contact__form-group">
                   <label htmlFor="message" className="contact__form-label">Message</label>
-                  <textarea id="message" className="contact__form-textarea" placeholder="Tell me about your project..." rows={5} />
+                  <textarea
+                    id="message"
+                    className="contact__form-textarea"
+                    placeholder="Tell me about your project..."
+                    rows={5}
+                    value={formData.message}
+                    onChange={handleChange}
+                    disabled={sending}
+                  />
                 </div>
-                <button type="submit" className="contact__form-btn">
-                  <FiSend size={16} />
-                  Send Message
+                <button
+                  type="submit"
+                  className={`contact__form-btn ${sending ? 'contact__form-btn--sending' : ''}`}
+                  disabled={sending}
+                >
+                  {sending ? (
+                    <>
+                      <span className="contact__spinner" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <FiSend size={16} />
+                      Send Message
+                    </>
+                  )}
                 </button>
               </form>
             </MagicCard>
           </motion.div>
         </div>
+
+        {/* Toast Notification */}
+        <AnimatePresence>
+          {toast && (
+            <motion.div
+              className={`contact__toast contact__toast--${toast.type}`}
+              initial={{ opacity: 0, y: 50, x: '-50%' }}
+              animate={{ opacity: 1, y: 0, x: '-50%' }}
+              exit={{ opacity: 0, y: 50, x: '-50%' }}
+              transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+            >
+              <div className="contact__toast-icon">
+                {toast.type === 'success' ? <FiCheck size={18} /> : <FiX size={18} />}
+              </div>
+              <span>{toast.message}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <motion.footer
           className="contact__footer"
@@ -129,3 +246,4 @@ export default function Contact() {
     </section>
   );
 }
+
