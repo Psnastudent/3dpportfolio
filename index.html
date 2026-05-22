@@ -1,13 +1,279 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>portfolio</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  
+  <link rel="apple-touch-icon" sizes="180x180" href="/wp-content/themes/23/assets/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/wp-content/themes/23/assets/images/favicon-32x32.png">
+  
+  <title>Santhosh Kumar S - Creative Developer & Designer</title>
+  <meta name="description" content="Hello! I'm Santhosh Kumar S, a creative developer and front-end engineer from India passionate about creating memorable 3D WebGL experiences.">
+  <meta name="robots" content="max-image-preview:large" />
+  
+  <link rel="stylesheet" id="app-css" href="/dist/bundle.css" type="text/css" media="all" />
+  
+  <script type="text/javascript">
+    window.template_url = "/wp-content/themes/23/26/public";
+  </script>
+  <style>
+    .canvas { opacity: 0; }
+    
+    /* Scroll Indicator */
+    .scroll-indicator {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: lowercase;
+      z-index: 10;
+      pointer-events: none;
+      animation: bounce 2s infinite ease-in-out;
+      font-family: monospace;
+    }
+    @keyframes bounce {
+      0%, 100% { bottom: 30px; }
+      50% { bottom: 20px; }
+    }
+
+    /* Contact Modal - Liquid Glassmorphism */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .contact-modal {
+      width: 90%;
+      max-width: 400px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 40px;
+      text-align: center;
+      transform: translateY(30px) scale(0.95);
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      /* Liquid SVG filter application */
+      filter: url(#liquid);
+      position: relative;
+    }
+    .modal-overlay.active .contact-modal {
+      transform: translateY(0) scale(1);
+    }
+    .contact-modal h2 {
+      font-size: 1.5rem;
+      color: #fff;
+      margin-bottom: 30px;
+      letter-spacing: 1px;
+    }
+    .contact-lnk {
+      display: block;
+      color: rgba(255,255,255,0.8);
+      font-size: 1rem;
+      margin-bottom: 20px;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 12px;
+      border-radius: 30px;
+      transition: all 0.3s ease;
+    }
+    .contact-lnk:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+    .modal-close {
+      position: absolute;
+      top: 20px; right: 20px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 1.2rem;
+      opacity: 0.5;
+      transition: 0.3s;
+    }
+    .modal-close:hover { opacity: 1; }
+  </style>
+</head>
+<body>
+  <!-- Liquid SVG Filter -->
+  <svg style="position: absolute; width: 0; height: 0;">
+    <filter id="liquid">
+      <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
+
+  <!-- Contact Modal -->
+  <div class="modal-overlay" id="contactModal">
+    <div class="contact-modal">
+      <div class="modal-close" id="closeModal">✕</div>
+      <h2>Get In Touch</h2>
+      <a href="mailto:santhoshkumar37937@gmail.com" class="contact-lnk">santhoshkumar37937@gmail.com</a>
+      <a href="https://github.com/Psnastudent" target="_blank" class="contact-lnk">GitHub Profile</a>
+      <a href="https://www.linkedin.com/in/santhosh-kumar-s-48b451297/" target="_blank" class="contact-lnk">LinkedIn Network</a>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">scroll to explore &darr;</div>
+  <!-- Custom Loading Transition Screen -->
+  <div class="loader">
+    <div class="wrap">
+      <i> loading </i>
+      <a href="javascript:void(0);"> enter </a>
+    </div>
+    <span></span>
+  </div>
+
+  <!-- WebGL Fullscreen Canvas -->
+  <div class="canvas"></div>
+
+  <!-- Main Navigation Overlay -->
+  <header class="header">
+    <div class="wrapper">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-6">
+            <a class="header__lnk" href="javascript:void(0);">Santhosh Kumar S</a>
+          </div>
+          <div class="col-6 d-flex align-items-center justify-content-end">
+            <a class="header__lnk--2 top-menu-lnk--3 js-contact-trigger" href="javascript:void(0);">Let's talk</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Horizontal Scroll Container -->
+  <div id="scroller">
+    <div id="content">
+      <main data-barba="container" data-barba-namespace="home">
+        <!-- 23 Narrative Scrolling Steps -->
+        <div class="steps">
+          <div class="step"> 1 </div>
+          <div class="step"> 2 </div>
+          <div class="step"> 3 </div>
+          <div class="step"> 4 </div>
+          <div class="step"> 5 </div>
+          <div class="step"> 6 </div>
+          <div class="step"> 7 </div>
+          <div class="step"> 8 </div>
+          <div class="step"> 9 </div>
+          <div class="step"> 10 </div>
+          <div class="step"> 11 </div>
+          <div class="step"> 12 </div>
+          <div class="step"> 13 </div>
+          <div class="step"> 14 </div>
+          <div class="step"> 15 </div>
+          <div class="step"> 16 </div>
+          <div class="step"> 17 </div>
+          <div class="step"> 18 </div>
+          <div class="step"> 19 </div>
+          <div class="step"> 20 </div>
+          <div class="step"> 21 </div>
+          <div class="step"> 22 </div>
+          <div class="step"> 23 </div>
+        </div>
+        
+        <!-- Interactive Awards Images -->
+        <div class="d-none" id="awards">
+          <img src="/awards/card1.png" alt="" class="img-fluid" data-title="1" />
+          <img src="/awards/card2.png" alt="" class="img-fluid" data-title="2" />
+          <img src="/awards/card3.png" alt="" class="img-fluid" data-title="3" />
+          <img src="/awards/card4.png" alt="" class="img-fluid" data-title="4" />
+          <img src="/awards/card5.png" alt="" class="img-fluid" data-title="5" />
+          <img src="/awards/card6.png" alt="" class="img-fluid" data-title="6" />
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Interactive Footer Overlay -->
+  <footer class="footer">
+    <div class="wrapper">
+      <div class="container-fluid">
+        <div class="row align-items-center justify-content-between">
+          <div class="col-8">
+            <ul class="footer__social">
+              <li><a class="footer__social-lnk" target="_blank" rel="noopener" href="https://www.linkedin.com/in/santhosh-kumar-s-48b451297/">Linkedin</a></li>
+              <li><a class="footer__social-lnk" target="_blank" rel="noopener" href="https://github.com/Psnastudent">GitHub</a></li>
+              <li><a class="footer__social-lnk js-contact-trigger" href="javascript:void(0);">Contact</a></li>
+            </ul>
+          </div>
+          
+          <!-- Soundtrack Controller Waveform Button -->
+          <div class="col-4 text-end">
+            <button class="footer__audio-toggle js-audio-toggle" type="button" aria-label="Disable sound" aria-pressed="false">
+              <svg class="footer__audio-icon" width="24" height="24" viewBox="0 0 10 10" aria-hidden="true">
+                <polyline class="js-audio-wave" points="1,5 2.14,4.08 3.29,3.55 4.43,3.82 5.57,4.8 6.71,5.9 7.86,6.45 9,6.08"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- WebGL Scene Asset Cache Definitions -->
+  <script type="text/javascript">
+    window.assets = [{
+      name: 'base',
+      data: {},
+      items: [
+        { name: 'scene', source: window.template_url + '/static/model/scene.glb', type: 'glb' },
+        { name: 'p1', source: window.template_url + '/static/images/particles.png', type: 'texture' },
+        { name: 'p2', source: window.template_url + '/static/images/particles-2.png', type: 'texture' },
+        { name: 'p3', source: window.template_url + '/static/images/particles-3.png', type: 'texture' },
+        { name: 'fogTexture', source: window.template_url + '/static/images/cloud.png', type: 'texture' },
+        { name: 'visionSound', source: window.template_url + '/static/audio/combo-3/1-vision.mp3', type: 'audio' },
+        { name: 'craftSound', source: window.template_url + '/static/audio/combo-3/2-craft.mp3', type: 'audio' },
+        { name: 'experienceSound', source: window.template_url + '/static/audio/combo-3/3-experience.mp3', type: 'audio' },
+        { name: 'hoverSound', source: window.template_url + '/static/audio/sfx/hover-beep-select.mp3', type: 'audio' }
+      ]
+    }];
+  </script>
+
+  <!-- Loaded WebGL/Scroll Main Engine Bundle -->
+  <script type="text/javascript" src="/dist/bundle.js" id="bundle-js"></script>
+  
+  <script>
+    // Contact Modal Logic
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('contactModal');
+      const closeBtn = document.getElementById('closeModal');
+      const triggers = document.querySelectorAll('.js-contact-trigger');
+
+      triggers.forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+          e.preventDefault();
+          modal.classList.add('active');
+        });
+      });
+
+      closeBtn.addEventListener('click', () => {
+        modal.classList.remove('active');
+      });
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.classList.remove('active');
+        }
+      });
+    });
+  </script>
+</body>
 </html>

@@ -4,4 +4,13 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    proxy: {
+      '/wp-content': {
+        target: 'https://www.aboutluca.com',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  }
 })
