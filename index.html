@@ -107,6 +107,61 @@
       transition: 0.3s;
     }
     .modal-close:hover { opacity: 1; }
+    
+    /* Contact Form Styles */
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    .contact-form input, .contact-form textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #fff;
+      padding: 12px 15px;
+      border-radius: 12px;
+      font-family: inherit;
+      outline: none;
+      transition: border 0.3s;
+      box-sizing: border-box;
+    }
+    .contact-form input:focus, .contact-form textarea:focus {
+      border-color: rgba(255,255,255,0.5);
+    }
+    .contact-form button {
+      background: #fff;
+      color: #000;
+      border: none;
+      padding: 12px;
+      border-radius: 30px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    .contact-form button:hover {
+      transform: translateY(-2px);
+      opacity: 0.9;
+    }
+    .form-success {
+      display: none;
+      color: #4ade80;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    .social-lnk {
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.3s;
+    }
+    .social-lnk:hover { color: #fff; }
   </style>
 </head>
 <body>
@@ -123,9 +178,18 @@
     <div class="contact-modal">
       <div class="modal-close" id="closeModal">✕</div>
       <h2>Get In Touch</h2>
-      <a href="mailto:santhoshkumar37937@gmail.com" class="contact-lnk">santhoshkumar37937@gmail.com</a>
-      <a href="https://github.com/Psnastudent" target="_blank" class="contact-lnk">GitHub Profile</a>
-      <a href="https://www.linkedin.com/in/santhosh-kumar-s-48b451297/" target="_blank" class="contact-lnk">LinkedIn Network</a>
+      <div class="form-success" id="formSuccess">Message sent! Please check your email inbox if you need to activate the form.</div>
+      <form id="contactForm" class="contact-form">
+        <input type="text" name="name" placeholder="Your Name" required>
+        <input type="email" name="email" placeholder="Your Email" required>
+        <textarea name="message" placeholder="Your Message" rows="4" required></textarea>
+        <button type="submit" id="submitBtn">Send Message</button>
+      </form>
+      <div class="social-links">
+        <a href="mailto:santhoshkumar37937@gmail.com" class="social-lnk">Email</a>
+        <a href="https://github.com/Psnastudent" target="_blank" class="social-lnk">GitHub</a>
+        <a href="https://www.linkedin.com/in/santhosh-kumar-s-48b451297/" target="_blank" class="social-lnk">LinkedIn</a>
+      </div>
     </div>
   </div>
 
@@ -272,6 +336,38 @@
         if (e.target === modal) {
           modal.classList.remove('active');
         }
+      });
+
+      // Form Submit Logic
+      const contactForm = document.getElementById('contactForm');
+      const submitBtn = document.getElementById('submitBtn');
+      const formSuccess = document.getElementById('formSuccess');
+
+      contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        submitBtn.innerText = 'Sending...';
+        submitBtn.disabled = true;
+
+        const formData = new FormData(contactForm);
+        const data = Object.fromEntries(formData.entries());
+
+        fetch("https://formsubmit.co/ajax/santhoshkumar37937@gmail.com", {
+            method: "POST",
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            contactForm.style.display = 'none';
+            formSuccess.style.display = 'block';
+        })
+        .catch(error => {
+            submitBtn.innerText = 'Error. Try Again.';
+            submitBtn.disabled = false;
+        });
       });
     });
   </script>
