@@ -34,13 +34,13 @@ function cleanAndProcessFile(cachePath, outputPath, isJS) {
             // Title Text
             { search: '"SCROLL TO EXPLORE"', replace: '"ABOUT ME"' },
             
-            // 3D scene narrative block 1 (Replace with degree/experience)
-            { search: '"I don\'t build websites."', replace: '"B.E ECE @ PSNA College (2022-2026)"' },
-            { search: '"I build experiences."', replace: '"CGPA: 7.91"' },
-            { search: '"Not to impress,"', replace: '"Aspiring Full-Stack Developer"' },
-            { search: '"but to make you feel something."', replace: '"passionate about building robust,"' },
-            { search: '"Between control and chaos,"', replace: '"scalable web applications"' },
-            { search: '"that\'s where I work."', replace: '"and digital experiences."' },
+            // 3D scene narrative block 1 (Replace with personal bio)
+            { search: '"I don\'t build websites."', replace: '"I\'m an aspiring Software Engineer and CSE student at PSNA College"' },
+            { search: '"I build experiences."', replace: '"with a strong foundation in Python, Java, and C++."' },
+            { search: '"Not to impress,"', replace: '"Experienced in front-end development with React and Figma."' },
+            { search: '"but to make you feel something."', replace: '"I\'ve built and deployed AI-powered applications"' },
+            { search: '"Between control and chaos,"', replace: '"including a grievance redressal system and a data-driven chatbot."' },
+            { search: '"that\'s where I work."', replace: '"Eager to solve real-world problems and explore new technologies."' },
             
             // Replace CRAFT
             { search: '"C R A F T"', replace: '"S K I L L S"' },
